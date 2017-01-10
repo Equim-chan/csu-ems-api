@@ -13,7 +13,7 @@ _(Section WIP)_
 _(Section WIP)_
 
 ### 获取所有有效成绩和挂科列表 ###
-* 路径: `/query/`
+* 路径: `/grades/`
 * 方法: `GET`
 * 必要参数:
 
@@ -55,7 +55,7 @@ _(Section WIP)_
 ## Setup ##
 _(Section WIP)_
 
-快速部署
+### 快速部署 ###
 ```shell
 $ git clone https://github.com/Equim-chan/csu-ems-api.git
 $ cd csu-ems-api
@@ -64,7 +64,7 @@ $ npm start
 ```
 默认会部署在2333端口上，如要修改端口，请使用参数`-p [value]`
 
-获取帮助
+### 获取帮助 ###
 ```shell
 $ node app.js -h
 ```
