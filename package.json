@@ -1,23 +1,22 @@
 {
-  "name": "csu-ems-api",
-  "version": "0.0.3",
+  "name": "csu-ems-redefiner",
+  "version": "1.0.0",
   "description": "Description is WIP.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+	"start": "node app.js",
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:Equim-chan/csu-ems-api.git"
+    "url": "git+ssh://git@bitbucket.org/theliberators/csu-ems-redefiner.git"
   },
   "author": "The Liberators",
-  "license": "GPL-3.0",
-  "homepage": "https://github.com/Equim-chan/csu-ems-api",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/theliberators/csu-ems-redefiner#readme",
   "dependencies": {
     "cheerio": "^0.22.0",
     "colors": "^1.1.2",
-    "commander": "^2.9.0",
     "express": "^4.14.0",
     "superagent": "^3.3.1",
     "true-html-escape": "^1.0.0"
