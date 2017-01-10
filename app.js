@@ -17,7 +17,7 @@ program
     .option('-h, --help')
     .option('-v, --version')
     .option('-p, --port [n]', parseInt)
-    .option('-f, --fulllog')
+    .option('-f, --fullLog')
     .parse(process.argv);
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
@@ -32,12 +32,12 @@ if (!program.help || !program.version) {
         console.log('\nOptions:');
         console.log('  -h, --help          print this message and exit.');
         console.log('  -v, --version       print the version and exit.');
-        console.log('  -f, --fulllog       enable full log, by default only errors are logged.');
+        console.log('  -f, --fullLog       enable full log, by default only errors are logged.');
         console.log('  -p, --port [value]  specify a port to listen, 2333 by default.');
         console.log('\nExamples:');
-        console.log('  $ npm start -p 43715                      # listening to 43715');
-        console.log('  # forever start app.js                    # deploy with forever as daemon (root access recommended)');
-        console.log('  # pm2 start -i 0 --name "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
+        console.log('  $ npm start -p 43715                           # listening to 43715');
+        console.log('  $ sudo forever start app.js                    # deploy with forever as daemon (root access recommended)');
+        console.log('  $ sudo pm2 start -i 0 --name "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
     }
     process.exit(0);
 }
@@ -54,25 +54,25 @@ app.get('/grades/', function (req, res, next) {
         var start = new Date();
         console.log((timeStamp() + 'Started to query the grades: ').cyan + req.query.id.yellow);
     }
-    access.login(req.query.id, req.query.pwd, res, function (headers, iires) {
+    access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
         program.fulllog && console.log((timeStamp() + 'Successfully logged in.').green);
         var ret = {};
-        var $ = cheerio.load(iires.text);
+        var $ = cheerio.load(ires.text);
         ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].replace('<', '').substring(3);
         ret.id = req.query.id;
 
         // 进入成绩页面
         superagent.get(base + $('li[title="我的成绩"] a').attr('href'))
             .set(headers)
-            .end(function (err, iiires) {
+            .end(function (err, iires) {
                 if (err) {
-                    console.log((timeStamp() + 'Failed to fetch grades\n' + err.stack).red);
-                    ret.error = '获取成绩失败';
+                    console.log((timeStamp() + 'Failed to get grades page\n' + err.stack).red);
+                    res.send({ error: '无法进入成绩页面' });
                     return next(err);
                 }
                 program.fulllog && console.log((timeStamp() + 'Successfully entered grades page.').green);
 
-                $ = cheerio.load(iiires.text);
+                $ = cheerio.load(iires.text);
 
                 // 获取成绩列表
                 let grades = {};
@@ -100,30 +100,69 @@ app.get('/grades/', function (req, res, next) {
 
                 // 完成所有工作后，登出
                 access.logout(headers, res, function() {
-                        // 第五步：返回JSON
-                        res.send(JSON.stringify(ret));
-                        program.fulllog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                    // 第五步：返回JSON
+                    res.send(JSON.stringify(ret));
+                    program.fulllog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
                 });
             });
     });
 });
 
+// TODO: 对参数的正确性进行检查
+
 // 查考试API，通过GET传入用户名和密码
-/*
 app.get('/exams/', function (req, res, next) {
     if (program.fulllog) {
         var start = new Date();
         console.log((timeStamp() + 'Started to query the exams: ').cyan + req.query.id.yellow);
     }
-    login(req.query.id, req.query.pwd, res, function (headers, iires) {
+    access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
         var ret = {};
-        var $ = cheerio.load(iires.text);
+        var $ = cheerio.load(ires.text);
         ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].replace('<', '').substring(3);
         ret.id = req.query.id;
+        
+        superagent.post('http://csujwc.its.csu.edu.cn/jsxsd/xsks/xsksap_list')
+            .set(headers)
+            .type('form')
+            .send({
+                xqlbmc: '',
+                xnxqid: '2016-2017-1',      //TODO: 添加别的选项，或者通过参数传入
+                xqlb: ''
+            })
+            .end(function (err, iires) {
+                if (err) {
+                    console.log((timeStamp() + 'Failed to reach exams page\n' + err.stack).red);
+                    res.send({ error: '获取成绩失败' });
+                    return next(err);
+                }
+                program.fulllog && console.log((timeStamp() + 'Successfully entered exams page.').green);
 
-        // TODO: POST，注意headers
+                $ = cheerio.load(iires.text);
+
+                let exams = [];
+
+                $('#dataList tr').each(function (index) {
+                    if (index === 0)
+                        return;
+                    let item = $(this).find('td');
+                    let subject = {};
+                    subject.subject = escaper.unescape(item.eq(3).text());
+                    subject.time = escaper.unescape(item.eq(4).text());
+                    subject.location = escaper.unescape(item.eq(5).text());
+                    subject.seat = escaper.unescape(item.eq(6).text());
+                    exams.push(subject);
+                });
+
+                ret.exams = exams;
+
+                access.logout(headers, res, function() {
+                    res.send(JSON.stringify(ret));
+                    program.fulllog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                });
+            });
+    });
 });
-*/
 
 app.listen(port);
 console.log((timeStamp() + 'The server is now running on port ' + port + '.').green);

@@ -51,9 +51,43 @@ _(Section WIP)_
   }
   ```
   
+### 获取考试安排表 ###
+* 路径: `/exams/`
+* 方法: `GET`
+* 必要参数:
+
+  ```JSON
+  {
+    "id": "用户名，一般是学号",
+    "pwd": "密码"
+  }
+  ```
+* 成功返回:
+
+  ```JavaScript
+  {
+    "name": "该学生的名字",
+    "id": "用户名",
+    "exams": [{
+      "subject": "科目名称"
+      "time": "考试时间",
+      "location": "考试地点",
+      "seat": "座位号"
+    }, {
+      // ...
+    }]
+  }
+  ```
+* 失败返回:
+
+  ```JavaScript
+  {
+    "error": "错误原因"
+  }
+  ```
+  
   
 ## Setup ##
-_(Section WIP)_
 
 ### 快速部署 ###
 ```shell
@@ -62,15 +96,19 @@ $ cd csu-ems-api
 $ npm install
 $ npm start
 ```
-默认会部署在2333端口上，如要修改端口，请使用参数`-p [value]`
+* 默认会部署在localhost:2333上，如要修改端口，请使用参数`-p|--port [value]`
+* 默认情况下只有错误会被打印，如果要打印全部的log，请使用参数`-f|--fullLog`
+
+### 稳定部署(以pm2作为daemon) ###
+```shell
+  ...
+$ sudo pm2 start -i 0 --name "csuapi" --watch true app.js
+```
 
 ### 获取帮助 ###
 ```shell
 $ node app.js -h
 ```
-实际部署时请自行调用pm2或forever等deamon
-
-
 
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-api/blob/master/package.json#L17)
