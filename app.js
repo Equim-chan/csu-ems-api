@@ -2,8 +2,9 @@
  * 完善异常处理
  */
 
-var http = require('http'),
-    express = require('express'),
+"use strict";
+
+var express = require('express'),
     superagent = require('superagent'),
     cheerio = require('cheerio'),
     escaper = require('true-html-escape'),
@@ -24,7 +25,7 @@ if (!program.help || !program.version) {
     console.log(('CSUEMS API v1.0.0').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
-        console.log('Preparation:')
+        console.log('Preparation:');
         console.log('  \\\\This section is WIP\\\\');
         console.log('\nUsage:');
         console.log('  npm start [-- <options...>]');
@@ -42,7 +43,7 @@ if (!program.help || !program.version) {
 }
 
 const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
-      port = program.port || 2333;
+      port = program.port || 2333,
       base = 'http://csujwc.its.csu.edu.cn';
 
 var app = express();
