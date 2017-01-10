@@ -9,11 +9,42 @@ _(Section WIP)_
 * 完成新成绩Email提醒
 * ...
 
-## Features ##
+## APIs ##
 _(Section WIP)_
-* 通过用户名和密码直接查询所有有效成绩，并列出挂科科目
-* ...
 
+### 获取所有有效成绩和挂科列表 ###
+* 路径: `/query/`
+* 方法: `GET`
+* 必要参数:
+
+  ```JSON
+  {
+    "id": "用户名，一般是学号",
+    "pwd": "密码"
+  }
+  ```
+* 返回:
+
+  ```JavaScript
+  {
+    "name": "该学生的名字",
+    "id": "用户名",
+    "grades": {
+      // 所有有成绩的科目与相应成绩
+      "课程名称": "分数",
+      // ...
+    },
+    "subject-count": "有成绩科目的数量",
+    "failed": {
+      // 所有挂科的科目与相应成绩
+      "课程名称": "分数",
+      // ...
+    },
+    "failed-count": "挂科科目的数量"
+  }
+  ```
+  
+  
 ## Setup ##
 _(Section WIP)_
 
@@ -31,6 +62,8 @@ $ npm start
 $ node app.js -h
 ```
 实际部署时请自行调用pm2或forever等deamon
+
+
 
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-api/blob/master/package.json#L17)
