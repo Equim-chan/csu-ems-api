@@ -23,7 +23,7 @@ _(Section WIP)_
     "pwd": "密码"
   }
   ```
-* 返回:
+* 成功返回:
 
   ```JavaScript
   {
@@ -41,6 +41,13 @@ _(Section WIP)_
       // ...
     },
     "failed-count": "挂科科目的数量"
+  }
+  ```
+* 失败返回:
+
+  ```JavaScript
+  {
+    "error": "错误原因"
   }
   ```
   
