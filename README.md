@@ -1,13 +1,8 @@
-# CSU-EMS-API #
+# 中南教务API #
 [![Build Status](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/?branch=master) [![GPLv3](https://img.shields.io/badge/Lisence-GPLv3-blue.svg)](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE)
 
 中南大学教务管理系统API，基于Node.js  
 __尚未完成，不管是代码还是这篇文档__
-
-## TODO ##
-_(Section WIP)_
-* 完成新成绩Email提醒
-* ...
 
 ## APIs ##
 _(Section WIP)_
@@ -62,12 +57,20 @@ _(Section WIP)_
     "pwd": "密码"
   }
   ```
+* 可选参数:
+
+  ```JavaScript
+    // ...
+    "sem": "学期，格式为形如'2016-2017-1'的满足正则表达式/^20\d{2}-20\d{2}-[1-2]$/的字符串。如未指定，则会自动获取当前学期"
+  }
+  ```
 * 成功返回:
 
   ```JavaScript
   {
     "name": "该学生的名字",
     "id": "用户名",
+    "sem": "学期"
     "exams": [{
       "subject": "科目名称"
       "time": "考试时间",
@@ -109,6 +112,12 @@ $ sudo pm2 start -i 0 --name "csuapi" --watch true app.js
 ```shell
 $ node app.js -h
 ```
+
+## FAQ ##
+* 为什么选择了Node.js？
+  * 因为方便。比如cheerio这个包可以很方便地通过jQuery来查询DOM元素。
+* 为什么要做成绑定端口的形式，而不是一个Node包？
+  * 出于几点考虑。首先要把Node.js程序打包成一个无依赖的库目前还是件比较麻烦的事，如果以Node.js包的形式写的话，上面的应用可能就也只能用Node.js写。为了方便其他语言能更容易地调用，这里采用了以GET/POST传参数，以JSON作为返回的方式。
 
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-api/blob/master/package.json#L17)

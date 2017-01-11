@@ -50,12 +50,16 @@ var app = express();
 
 // 查成绩API，通过GET传入用户名和密码
 app.get('/grades/', function (req, res, next) {
-    if (program.fulllog) {
+    if (!req.query.id || !req.query.pwd) {
+        res.send({ error: "参数不正确" });
+        return;
+    }
+    if (program.fullLog) {
         var start = new Date();
         console.log((timeStamp() + 'Started to query the grades: ').cyan + req.query.id.yellow);
     }
     access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
-        program.fulllog && console.log((timeStamp() + 'Successfully logged in.').green);
+        program.fullLog && console.log((timeStamp() + 'Successfully logged in.').green);
         var ret = {};
         var $ = cheerio.load(ires.text);
         ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].replace('<', '').substring(3);
@@ -70,7 +74,7 @@ app.get('/grades/', function (req, res, next) {
                     res.send({ error: '无法进入成绩页面' });
                     return next(err);
                 }
-                program.fulllog && console.log((timeStamp() + 'Successfully entered grades page.').green);
+                program.fullLog && console.log((timeStamp() + 'Successfully entered grades page.').green);
 
                 $ = cheerio.load(iires.text);
 
@@ -102,32 +106,51 @@ app.get('/grades/', function (req, res, next) {
                 access.logout(headers, res, function() {
                     // 第五步：返回JSON
                     res.send(JSON.stringify(ret));
-                    program.fulllog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                    program.fullLog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
                 });
             });
     });
 });
 
-// TODO: 对参数的正确性进行检查
-
 // 查考试API，通过GET传入用户名和密码
 app.get('/exams/', function (req, res, next) {
-    if (program.fulllog) {
+    if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
+        res.send({ error: "参数不正确" });
+        return;
+    }
+    if (program.fullLog) {
         var start = new Date();
         console.log((timeStamp() + 'Started to query the exams: ').cyan + req.query.id.yellow);
+    }
+    // 获取想要查询的学期，如果没有指定以系统时间为准
+    var sem;
+    if (req.query.sem) {
+        sem = req.query.sem;
+    } else {
+        let now = new Date();
+        let month = now.getMonth();
+        let year = now.getFullYear();
+        if (month === 0) {
+            sem = (year - 1) + '-' + year + '-1';
+        } else if (month <= 6) {
+            sem = (year - 1) + '-' + year + '-2';
+        } else {
+            sem = year + '-' + (year + 1) + '-1';
+        }
     }
     access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
         var ret = {};
         var $ = cheerio.load(ires.text);
         ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].replace('<', '').substring(3);
         ret.id = req.query.id;
+        ret.sem = sem;
         
         superagent.post('http://csujwc.its.csu.edu.cn/jsxsd/xsks/xsksap_list')
             .set(headers)
             .type('form')
             .send({
                 xqlbmc: '',
-                xnxqid: '2016-2017-1',      //TODO: 添加别的选项，或者通过参数传入
+                xnxqid: sem,
                 xqlb: ''
             })
             .end(function (err, iires) {
@@ -136,7 +159,7 @@ app.get('/exams/', function (req, res, next) {
                     res.send({ error: '获取成绩失败' });
                     return next(err);
                 }
-                program.fulllog && console.log((timeStamp() + 'Successfully entered exams page.').green);
+                program.fullLog && console.log((timeStamp() + 'Successfully entered exams page.').green);
 
                 $ = cheerio.load(iires.text);
 
@@ -158,7 +181,7 @@ app.get('/exams/', function (req, res, next) {
 
                 access.logout(headers, res, function() {
                     res.send(JSON.stringify(ret));
-                    program.fulllog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                    program.fullLog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
                 });
             });
     });
