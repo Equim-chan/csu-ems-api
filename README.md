@@ -8,7 +8,7 @@ __尚未完成，不管是代码还是这篇文档__
 _(Section WIP)_
 
 ### 获取所有有效成绩和挂科列表 ###
-* 路径: `/grades/`
+* 路径: `/grades`
 * 方法: `GET`
 * 必要参数:
 
@@ -47,7 +47,7 @@ _(Section WIP)_
   ```
   
 ### 获取考试安排表 ###
-* 路径: `/exams/`
+* 路径: `/exams`
 * 方法: `GET`
 * 必要参数:
 
@@ -105,13 +105,16 @@ $ npm start
 ### 稳定部署(以pm2作为daemon) ###
 ```shell
   ...
-$ sudo pm2 start -i 0 -n "csuapi" --watch true app.js
+$ pm2 start -i 0 -n "csuapi" --watch true app.js
+```
+查看日志：
+```shell
+$ pm2 logs csuapi
 ```
 撤销部署：
 ```shell
-  ...
-$ sudo pm2 stop csuapi
-$ sudo pm2 delete csuapi
+$ pm2 stop csuapi
+$ pm2 delete csuapi
 ```
 
 ### 获取帮助 ###

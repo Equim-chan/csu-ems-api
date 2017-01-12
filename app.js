@@ -35,9 +35,9 @@ if (!program.help || !program.version) {
         console.log('  -f, --fullLog       enable full log, by default only errors are logged.');
         console.log('  -p, --port [value]  specify a port to listen, 2333 by default.');
         console.log('\nExamples:');
-        console.log('  $ npm start -p 43715                           # listening to 43715');
-        console.log('  $ sudo forever start app.js                    # deploy with forever as daemon (root access recommended)');
-        console.log('  $ sudo pm2 start -i 0 --name "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
+        console.log('  $ npm start -p 43715                  # listening to 43715');
+        console.log('  $ forever start app.js                # deploy with forever as daemon (root access recommended)');
+        console.log('  $ pm2 start -i 0 -n "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
     }
     process.exit(0);
 }
