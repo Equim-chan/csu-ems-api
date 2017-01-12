@@ -105,7 +105,13 @@ $ npm start
 ### 稳定部署(以pm2作为daemon) ###
 ```shell
   ...
-$ sudo pm2 start -i 0 --name "csuapi" --watch true app.js
+$ sudo pm2 start -i 0 -n "csuapi" --watch true app.js
+```
+撤销部署：
+```shell
+  ...
+$ sudo pm2 stop csuapi
+$ sudo pm2 delete csuapi
 ```
 
 ### 获取帮助 ###
@@ -122,7 +128,7 @@ $ node app.js -h
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-api/blob/master/package.json#L17)
 
-## Lisence ##
+## License ##
 * 本项目使用[GPL-3.0](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE)授权。
 
 ## Initiators ##
