@@ -23,7 +23,7 @@ program
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v2.0.3').rainbow);
+    console.log(('CSUEMS API v2.1.1').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -112,7 +112,7 @@ app.get('/grades', function (req, res, next) {
 
                     let item = {
                         sem: escaper.unescape(element.eq(2).text()),
-                        regular: escaper.unescape(element.eq(4).text()),
+                        reg: escaper.unescape(element.eq(4).text()),
                         exam: escaper.unescape(element.eq(5).text()),
                         overall: escaper.unescape(element.eq(6).text())
                     }
