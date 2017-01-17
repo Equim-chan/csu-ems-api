@@ -110,11 +110,12 @@ app.get('/grades', function (req, res, next) {
                     let element = $(this).find('td');
                     let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
 
-                    let item = {};
-                    item.sem = escaper.unescape(element.eq(2).text());
-                    item.regular = escaper.unescape(element.eq(4).text());
-                    item.exam = escaper.unescape(element.eq(5).text());
-                    item.overall = escaper.unescape(element.eq(6).text());
+                    let item = {
+                        sem: escaper.unescape(element.eq(2).text()),
+                        regular: escaper.unescape(element.eq(4).text()),
+                        exam: escaper.unescape(element.eq(5).text()),
+                        overall: escaper.unescape(element.eq(6).text())
+                    }
                     if (req.query.details) {
                         item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
                         item.attr = escaper.unescape(element.eq(8).text());
@@ -204,10 +205,11 @@ app.get('/exams', function (req, res, next) {
                     let element = $(this).find('td');
                     let title = escaper.unescape(element.eq(3).text());
 
-                    let item = {};
-                    item.time = escaper.unescape(element.eq(4).text());
-                    item.location = escaper.unescape(element.eq(5).text());
-                    item.seat = escaper.unescape(element.eq(6).text());
+                    let item = {
+                        time: escaper.unescape(element.eq(4).text()),
+                        location: escaper.unescape(element.eq(5).text()),
+                        seat: escaper.unescape(element.eq(6).text())
+                    };
 
                     ret.exams[title] = item;
                     ret['exams-count']++;
