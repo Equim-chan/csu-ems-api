@@ -4,21 +4,21 @@
 中南大学教务管理系统API，基于Node.js  
 __尚未完成，不管是代码还是这篇文档__
 
-- [APIs](#APIs)
-  - [获取所有有效成绩和挂科列表](#获取所有有效成绩和挂科列表)
+- [APIs](#apis)
+  - [获取所有成绩和挂科列表](#获取所有成绩和挂科列表)
   - [获取考试安排表](#获取考试安排表)
 - [Setup](#Setup)
   - [快速部署](#快速部署)
-  - [稳定部署(以pm2作为daemon)](#稳定部署(以pm2作为daemon))
+  - [稳定部署(以pm2作为daemon)](#稳定部署以pm2作为daemon)
   - [获取帮助](#获取帮助)
-- [FAQ](#FAQ)
-- [Dependencies](#Dependencies)
-- [License](#License)
-- [Initiators](#Initiators)
+- [FAQ](#faq)
+- [Dependencies](#dependencies)
+- [License](#license)
+- [Initiators](#initiators)
 
 ## APIs ##
 
-版本：1.0.1
+版本：2.0.1
 
 ### 获取所有成绩和挂科列表 ###
 * 路径: `/grades`

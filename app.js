@@ -23,7 +23,7 @@ program
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v1.0.1').rainbow);
+    console.log(('CSUEMS API v2.0.1').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
         console.log('Preparation:');

@@ -1,6 +1,6 @@
 {
   "name": "csu-ems-api",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "description": "APIs for the EMS of CSU, based on Node.js",
   "main": "app.js",
   "scripts": {
