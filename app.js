@@ -124,16 +124,15 @@ app.get('/grades', function (req, res, next) {
 
                     // 如果有补考记录，则以最高分的为准
                     if (title in ret.grades) {
+                        // 暂不考虑NaN
                         if (item.overall < ret.grades[title].overall) {
                             return;
                         }
                         if (!element.eq(6).css('color')) {
                             delete ret.failed[title];
                         }
-                    } else {
-                        if (element.eq(6).css('color')) {
-                            ret.failed[title] = item;
-                        }
+                    } else if (element.eq(6).css('color')) {
+                        ret.failed[title] = item;
                     }
 
                     ret.grades[title] = item;
