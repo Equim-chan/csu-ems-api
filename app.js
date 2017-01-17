@@ -23,7 +23,7 @@ program
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v2.0.2').rainbow);
+    console.log(('CSUEMS API v2.0.3').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -102,7 +102,7 @@ app.get('/grades', function (req, res, next) {
                 ret.grades = {};
                 ret.failed = {};
 
-                // 获取成绩列表，如果有补考记录，则以最高分的为准
+                // 获取成绩列表
                 $('#dataList tr').each(function (index) {
                     if (index === 0) {
                         return;
@@ -115,21 +115,28 @@ app.get('/grades', function (req, res, next) {
                     item.regular = escaper.unescape(element.eq(4).text());
                     item.exam = escaper.unescape(element.eq(5).text());
                     item.overall = escaper.unescape(element.eq(6).text());
+                    if (req.query.details) {
+                        item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
+                        item.attr = escaper.unescape(element.eq(8).text());
+                        item.genre = escaper.unescape(element.eq(9).text());
+                        item.credit = escaper.unescape(element.eq(7).text());
+                    }
 
+                    // 如果有补考记录，则以最高分的为准
                     if (title in ret.grades) {
                         if (item.overall < ret.grades[title].overall) {
                             return;
                         }
+                        if (!element.eq(6).css('color')) {
+                            delete ret.failed[title];
+                        }
+                    } else {
+                        if (element.eq(6).css('color')) {
+                            ret.failed[title] = item;
+                        }
                     }
 
                     ret.grades[title] = item;
-
-                    // 暂不考虑NaN，(字符串 < 60)为false
-                    if (parseInt(item.overall) < 60) {
-                        ret.failed[title] = item;
-                    } else {
-                        delete ret.failed[title];
-                    }
                 });
 
                 ret['subject-count'] = Object.keys(ret.grades).length;
@@ -138,11 +145,14 @@ app.get('/grades', function (req, res, next) {
                 access.logout(headers, res, function() {
                     // 返回JSON
                     res.send(JSON.stringify(ret));
-                    fullLog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                    fullLog && console.log((timeStamp() +
+                        'Successfully logged out: ').green +
+                        req.query.id.yellow +
+                        (' (processed in ' +
+                            (new Date() - start) + 'ms)'
+                        ).green);
                 });
             });
-
-
     });
 });
 
@@ -213,4 +223,8 @@ app.get('/exams', function (req, res, next) {
 });
 
 app.listen(port);
-console.log((timeStamp() + 'The server is now running on port ' + port + '.').green);
+console.log((timeStamp() +
+    'The server is now running on port ' +
+    port + '. Full logging is ' +
+    (fullLog ? 'enabled.' : 'disabled.')
+    ).green);
