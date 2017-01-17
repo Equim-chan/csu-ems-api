@@ -100,9 +100,7 @@ app.get('/grades', function (req, res, next) {
                 $ = cheerio.load(iires.text);
                 
                 ret.grades = {};
-                ret['subject-count'] = 0;
                 ret.failed = {};
-                ret['failed-count'] = 0;
 
                 // 获取成绩列表，如果有补考记录，则以最高分的为准
                 $('#dataList tr').each(function (index) {
@@ -125,16 +123,17 @@ app.get('/grades', function (req, res, next) {
                     }
 
                     ret.grades[title] = item;
-                    ret['subject-count']++;
 
                     // 暂不考虑NaN，(字符串 < 60)为false
                     if (parseInt(item.overall) < 60) {
                         ret.failed[title] = item;
-                        ret['failed-count']++;
                     } else {
                         delete ret.failed[title];
                     }
                 });
+
+                ret['subject-count'] = Object.keys(ret.grades).length;
+                ret['failed-count'] = Object.keys(ret.failed).length;
 
                 access.logout(headers, res, function() {
                     // 返回JSON
