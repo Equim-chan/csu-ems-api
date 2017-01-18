@@ -23,7 +23,7 @@ program
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v2.1.1').rainbow);
+    console.log(('CSUEMS API v2.1.2').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -63,7 +63,7 @@ const timeStamp = () => new Date().format('[MM-dd hh:mm:ss]'),
 var app = express();
 
 // 查成绩API，通过GET传入用户名和密码
-app.get('/grades', function (req, res, next) {
+app.get(/\/[grades|g]$/, function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -97,13 +97,13 @@ app.get('/grades', function (req, res, next) {
 
                 let $ = cheerio.load(iires.text);
 
-                let ret = {
+                let result = {
                     name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
                     id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
                     grades: {},
                     'subject-count': 0,
                     failed: {},
-                    'failed-count': 0
+                    'failed-count': 0,
                 };
 
                 // 获取成绩列表
@@ -128,27 +128,27 @@ app.get('/grades', function (req, res, next) {
                     }
 
                     // 如果有补考记录，则以最高分的为准
-                    if (title in ret.grades) {
+                    if (title in result.grades) {
                         // 暂不考虑NaN
-                        if (item.overall < ret.grades[title].overall) {
+                        if (item.overall < result.grades[title].overall) {
                             return;
                         }
                         if (!element.eq(6).css('color')) {
-                            delete ret.failed[title];
+                            delete result.failed[title];
                         }
                     } else if (element.eq(6).css('color')) {
-                        ret.failed[title] = item;
+                        result.failed[title] = item;
                     }
 
-                    ret.grades[title] = item;
+                    result.grades[title] = item;
                 });
 
-                ret['subject-count'] = Object.keys(ret.grades).length;
-                ret['failed-count'] = Object.keys(ret.failed).length;
+                result['subject-count'] = Object.keys(result.grades).length;
+                result['failed-count'] = Object.keys(result.failed).length;
 
                 access.logout(headers, res, function() {
                     // 返回JSON
-                    res.send(JSON.stringify(ret));
+                    res.send(JSON.stringify(result));
                     if (fullLog) {
                         console.log(`${timeStamp()} Successfully logged out: `.green +
                             req.query.id.yellow +
@@ -160,7 +160,7 @@ app.get('/grades', function (req, res, next) {
 });
 
 // 查考试API，通过GET传入用户名和密码
-app.get('/exams', function (req, res, next) {
+app.get(/\/[exams|e]$/, function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -195,7 +195,7 @@ app.get('/exams', function (req, res, next) {
 
                 let $ = cheerio.load(iires.text);
 
-                let ret = {
+                let result = {
                     name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
                     id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
                     sem: req.query.sem || getSem(),
@@ -216,12 +216,12 @@ app.get('/exams', function (req, res, next) {
                         seat: escaper.unescape(element.eq(6).text())
                     };
 
-                    ret.exams[title] = item;
-                    ret['exams-count']++;
+                    result.exams[title] = item;
+                    result['exams-count']++;
                 });
 
                 access.logout(headers, res, function() {
-                    res.send(JSON.stringify(ret));
+                    res.send(JSON.stringify(result));
                     if (fullLog) {
                         console.log(`${timeStamp()} Successfully logged out: `.green +
                             req.query.id.yellow +
