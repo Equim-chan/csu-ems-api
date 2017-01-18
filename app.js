@@ -17,13 +17,13 @@ var express    = require('express'),
 program
     .option('-h, --help')
     .option('-v, --version')
-    .option('-p, --port [n]', parseInt)
+    .option('-p, --port [value]', parseInt)
     .option('-f, --fullLog')
     .parse(process.argv);
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v2.1.2').rainbow);
+    console.log(('CSUEMS API v2.1.3').rainbow);
     console.log(('by The Liberators').rainbow);
     if (!program.help) {
         console.log('Preparation:');
@@ -34,9 +34,9 @@ if (!program.help || !program.version) {
         console.log('  -h, --help          print this message and exit.');
         console.log('  -v, --version       print the version and exit.');
         console.log('  -f, --fullLog       enable full log, by default only errors are logged.');
-        console.log('  -p, --port [value]  specify a port to listen, 2333 by default.');
+        console.log('  -p, --port [value]  specify a port to listen, process.env.PORT || 2333 by default.');
         console.log('\nExamples:');
-        console.log('  $ npm start -p 43715                  # listening to 43715');
+        console.log('  $ npm start -- -p 43715               # listening to 43715');
         console.log('  $ forever start app.js                # deploy with forever as daemon (root access recommended)');
         console.log('  $ pm2 start -i 0 -n "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
     }
@@ -57,7 +57,7 @@ const timeStamp = () => new Date().format('[MM-dd hh:mm:ss]'),
               return year + '-' + (year + 1) + '-1';
           }
       },
-      port = program.port || 2333,
+      port = program.port || process.env.PORT || 2333,
       fullLog = program.fullLog;
 
 var app = express();
@@ -232,5 +232,6 @@ app.get(/\/[exams|e]$/, function (req, res, next) {
     });
 });
 
-app.listen(port);
-console.log(`${timeStamp()} The API is now running on port ${port}. Full logging is ${fullLog ? 'enabled' : 'disabled'}`.green);
+app.listen(port, () => {
+    console.log(`${timeStamp()} The API is now running on port ${port}. Full logging is ${fullLog ? 'enabled' : 'disabled'}`.green);
+});
