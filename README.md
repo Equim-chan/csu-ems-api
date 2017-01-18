@@ -1,12 +1,13 @@
 # 中南教务API #
 [![Build Status](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/?branch=master) [![GPLv3](https://img.shields.io/badge/Lisence-GPLv3-blue.svg)](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE)
 
-中南大学教务管理系统API，基于Node.js  
+中南大学本科教务管理系统的第三方API，基于Node.js  
 __尚未完成，不管是代码还是这篇文档__
 
 - [APIs](#apis)
-  - [获取所有成绩和挂科列表](#获取所有成绩和挂科列表)
+  - [获取成绩和挂科列表](#获取成绩和挂科列表)
   - [获取考试安排表](#获取考试安排表)
+  - [选某一节课](#选某一节课)
 - [Setup](#setup)
   - [快速部署](#快速部署)
   - [稳定部署(以pm2作为daemon)](#稳定部署以pm2作为daemon)
@@ -20,7 +21,7 @@ __尚未完成，不管是代码还是这篇文档__
 
 版本：2.1.1
 
-### 获取所有成绩和挂科列表 ###
+### 获取成绩和挂科列表 ###
 * 路径: `/grades`
 * 方法: `GET`
 * 必要参数:
@@ -58,7 +59,6 @@ __尚未完成，不管是代码还是这篇文档__
       },
       // ...
     },
-    "subject-count": "有成绩科目的数量",
     "failed": {
       "课程名称": {
         "sem":     "学期，同上",
@@ -72,6 +72,7 @@ __尚未完成，不管是代码还是这篇文档__
       },
       // ...
     },
+    "subject-count": "有成绩科目的数量",
     "failed-count": "挂科科目的数量"
   }
   ```
@@ -127,7 +128,9 @@ __尚未完成，不管是代码还是这篇文档__
   }
   ```
   
-  
+### 选某一节课 ###
+__尚未实现__
+
 ## Setup ##
 
 ### 快速部署 ###
@@ -162,12 +165,15 @@ $ node app.js -h
 
 ## FAQ ##
 * 为什么选择了Node.js？
-  * 因为方便。比如cheerio这个包可以很方便地通过jQuery来查询DOM元素。
+  * 因为方便。
 * 为什么要做成绑定端口的形式，而不是一个Node包？
   * 出于几点考虑。首先要把Node.js程序打包成一个无依赖的库目前还是件比较麻烦的事，如果以Node.js包的形式写的话，上面的应用可能就也只能用Node.js写。为了方便其他语言能更容易地调用，这里采用了以GET/POST传参数，以JSON作为返回的方式。
 
 ## Dependencies ##
 * 详见[package.json](https://github.com/Equim-chan/csu-ems-api/blob/master/package.json#L17)
+
+## Related ##
+* [csu-ems-notify](https://github.com/Equim-chan/csu-ems-notify) - 基于此项目的一个邮件提醒服务
 
 ## License ##
 * 本项目使用[GPL-3.0](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE)授权。

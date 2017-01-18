@@ -43,7 +43,7 @@ if (!program.help || !program.version) {
     process.exit(0);
 }
 
-const timeStamp = () => new Date().format('[MM-dd hh:mm:ss] '),
+const timeStamp = () => new Date().format('[MM-dd hh:mm:ss]'),
       // 以系统时间获取当前学期
       getSem = () => {
           let now = new Date();
@@ -70,10 +70,12 @@ app.get('/grades', function (req, res, next) {
     }
     if (fullLog) {
         var start = new Date();
-        console.log((timeStamp() + 'Started to query the grades: ').cyan + req.query.id.yellow);
+        console.log(`${timeStamp()} Started to query the grades: `.cyan + req.query.id.yellow);
     }
     access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
-        fullLog && console.log((timeStamp() + 'Successfully logged in.').green);
+        if (fullLog) {
+            console.log(`${timeStamp()} Successfully logged in.`.green);
+        }
 
         var ret = {};
         var $ = cheerio.load(ires.text);
@@ -91,11 +93,13 @@ app.get('/grades', function (req, res, next) {
             })
             .end(function (err, iires) {
                 if (err) {
-                    console.log((timeStamp() + 'Failed to get grades page\n' + err.stack).red);
+                    console.log(`${timeStamp()} Failed to get grades page\n${err.stack}`.red);
                     res.send({ error: '无法进入成绩页面' });
                     return next(err);
                 }
-                fullLog && console.log((timeStamp() + 'Successfully entered grades page.').green);
+                if (fullLog) {
+                    console.log(`${timeStamp()} Successfully entered grades page.`.green);
+                }
 
                 $ = cheerio.load(iires.text);
                 
@@ -115,7 +119,7 @@ app.get('/grades', function (req, res, next) {
                         reg: escaper.unescape(element.eq(4).text()),
                         exam: escaper.unescape(element.eq(5).text()),
                         overall: escaper.unescape(element.eq(6).text())
-                    }
+                    };
                     if (req.query.details) {
                         item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
                         item.attr = escaper.unescape(element.eq(8).text());
@@ -145,12 +149,11 @@ app.get('/grades', function (req, res, next) {
                 access.logout(headers, res, function() {
                     // 返回JSON
                     res.send(JSON.stringify(ret));
-                    fullLog && console.log((timeStamp() +
-                        'Successfully logged out: ').green +
-                        req.query.id.yellow +
-                        (' (processed in ' +
-                            (new Date() - start) + 'ms)'
-                        ).green);
+                    if (fullLog) {
+                        console.log(`${timeStamp()} Successfully logged out: `.green +
+                            req.query.id.yellow +
+                            ` (processed in ${new Date() - start} ms)`.green);
+                    }
                 });
             });
     });
@@ -164,10 +167,12 @@ app.get('/exams', function (req, res, next) {
     }
     if (fullLog) {
         var start = new Date();
-        console.log((timeStamp() + 'Started to query the exams: ').cyan + req.query.id.yellow);
+        console.log(`${timeStamp()} Started to query the exams: `.cyan + req.query.id.yellow);
     }
     access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
-        fullLog && console.log((timeStamp() + 'Successfully logged in.').green);
+        if (fullLog) {
+            console.log(`${timeStamp()} Successfully logged in.`.green);
+        }
 
         var ret = {};
         var $ = cheerio.load(ires.text);
@@ -187,11 +192,13 @@ app.get('/exams', function (req, res, next) {
             })
             .end(function (err, iires) {
                 if (err) {
-                    console.log((timeStamp() + 'Failed to reach exams page\n' + err.stack).red);
+                    console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
                     res.send({ error: '获取成绩失败' });
                     return next(err);
                 }
-                fullLog && console.log((timeStamp() + 'Successfully entered exams page.').green);
+                if (fullLog) {
+                    console.log(`${timeStamp()} Successfully entered exams page.`.green);
+                }
 
                 $ = cheerio.load(iires.text);
 
@@ -217,15 +224,16 @@ app.get('/exams', function (req, res, next) {
 
                 access.logout(headers, res, function() {
                     res.send(JSON.stringify(ret));
-                    fullLog && console.log((timeStamp() + 'Successfully logged out: ').green + req.query.id.yellow + (' (processed in ' + (new Date() - start) + 'ms)').green);
+                    if (fullLog) {
+                        console.log(`${timeStamp()} Successfully logged out: `.green +
+                            req.query.id.yellow +
+                            ` (processed in ${new Date() - start} ms)`.green);
+                    }
+                    
                 });
             });
     });
 });
 
 app.listen(port);
-console.log((timeStamp() +
-    'The server is now running on port ' +
-    port + '. Full logging is ' +
-    (fullLog ? 'enabled.' : 'disabled.')
-    ).green);
+console.log(`${timeStamp()} The API is now running on port ${port}. Full logging is ${fullLog ? 'enabled' : 'disabled'}`.green);
