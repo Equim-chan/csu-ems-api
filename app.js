@@ -11,7 +11,7 @@ var express    = require('express'),
     escaper    = require('true-html-escape'),
     colors     = require('colors'),
     program    = require('commander'),
-    Date       = require('./lib/Date.js'),
+    moment     = require('moment'),
     access     = require('./lib/access.js');
 
 program
@@ -43,7 +43,7 @@ if (!program.help || !program.version) {
     process.exit(0);
 }
 
-const timeStamp = () => new Date().format('[MM-dd hh:mm:ss]'),
+const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
       // 以系统时间获取当前学期
       getSem = () => {
           let now = new Date();
