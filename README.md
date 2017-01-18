@@ -1,4 +1,5 @@
 # 中南教务API #
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e0e581dce60642f59d3019e760eaba7e)](https://www.codacy.com/app/Equim-chan/csu-ems-api?utm_source=github.com&utm_medium=referral&utm_content=Equim-chan/csu-ems-api&utm_campaign=badger)
 [![Build Status](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Equim-chan/csu-ems-api/?branch=master) [![GPLv3](https://img.shields.io/badge/Lisence-GPLv3-blue.svg)](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE)
 
 中南大学本科教务管理系统的第三方API，基于Node.js  
