@@ -65,23 +65,17 @@ var app = express();
 // 查成绩API，通过GET传入用户名和密码
 app.get('/grades', function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
-        res.send({ error: "参数不正确" });
+        res.status(404).send({ error: "参数不正确" });
         return;
     }
     if (fullLog) {
         var start = new Date();
         console.log(`${timeStamp()} Started to query the grades: `.cyan + req.query.id.yellow);
     }
-    access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
+    access.login(req.query.id, req.query.pwd, res, function (headers) {
         if (fullLog) {
             console.log(`${timeStamp()} Successfully logged in.`.green);
         }
-
-        var ret = {};
-        var $ = cheerio.load(ires.text);
-
-        ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].substring(3).replace(/</, '');
-        ret.id = req.query.id;
 
         // 实际上xnxq01id为空的时候和GET这个URL的效果是一样的，都是查询所有学期
         superagent
@@ -94,17 +88,23 @@ app.get('/grades', function (req, res, next) {
             .end(function (err, iires) {
                 if (err) {
                     console.log(`${timeStamp()} Failed to get grades page\n${err.stack}`.red);
-                    res.send({ error: '无法进入成绩页面' });
+                    res.status(404).send({ error: '无法进入成绩页面' });
                     return next(err);
                 }
                 if (fullLog) {
                     console.log(`${timeStamp()} Successfully entered grades page.`.green);
                 }
 
-                $ = cheerio.load(iires.text);
-                
-                ret.grades = {};
-                ret.failed = {};
+                let $ = cheerio.load(iires.text);
+
+                let ret = {
+                    name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
+                    id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
+                    grades: {},
+                    'subject-count': 0,
+                    failed: {},
+                    'failed-count': 0
+                };
 
                 // 获取成绩列表
                 $('#dataList tr').each(function (index) {
@@ -162,24 +162,17 @@ app.get('/grades', function (req, res, next) {
 // 查考试API，通过GET传入用户名和密码
 app.get('/exams', function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
-        res.send({ error: "参数不正确" });
+        res.status(404).send({ error: "参数不正确" });
         return;
     }
     if (fullLog) {
         var start = new Date();
         console.log(`${timeStamp()} Started to query the exams: `.cyan + req.query.id.yellow);
     }
-    access.login(req.query.id, req.query.pwd, res, function (headers, ires) {
+    access.login(req.query.id, req.query.pwd, res, function (headers) {
         if (fullLog) {
             console.log(`${timeStamp()} Successfully logged in.`.green);
         }
-
-        var ret = {};
-        var $ = cheerio.load(ires.text);
-
-        ret.name = escaper.unescape($('.block1text').html()).match(/姓名：.+</)[0].replace('<', '').substring(3);
-        ret.id = req.query.id;
-        ret.sem = req.query.sem || getSem();
 
         superagent
             .post('http://csujwc.its.csu.edu.cn/jsxsd/xsks/xsksap_list')
@@ -187,23 +180,28 @@ app.get('/exams', function (req, res, next) {
             .type('form')
             .send({
                 xqlbmc: '',
-                xnxqid: ret.sem,
+                xnxqid: req.query.sem || getSem(),
                 xqlb: ''
             })
             .end(function (err, iires) {
                 if (err) {
                     console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
-                    res.send({ error: '获取成绩失败' });
+                    res.status(404).send({ error: '获取成绩失败' });
                     return next(err);
                 }
                 if (fullLog) {
                     console.log(`${timeStamp()} Successfully entered exams page.`.green);
                 }
 
-                $ = cheerio.load(iires.text);
+                let $ = cheerio.load(iires.text);
 
-                ret.exams = {};
-                ret['exams-count'] = 0;
+                let ret = {
+                    name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
+                    id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
+                    sem: req.query.sem || getSem(),
+                    exams: {},
+                    'exams-count': 0,
+                };
 
                 $('#dataList tr').each(function (index) {
                     if (index === 0) {
@@ -229,7 +227,6 @@ app.get('/exams', function (req, res, next) {
                             req.query.id.yellow +
                             ` (processed in ${new Date() - start} ms)`.green);
                     }
-                    
                 });
             });
     });
