@@ -23,23 +23,27 @@ program
 
 // 别问我为什么这里逻辑这么奇怪……测试的结果确实是这样的啊hhh
 if (!program.help || !program.version) {
-    console.log(('CSUEMS API v2.1.3').rainbow);
-    console.log(('by The Liberators').rainbow);
-    if (!program.help) {
-        console.log('Preparation:');
-        console.log('  \\\\This section is WIP\\\\');
-        console.log('\nUsage:');
-        console.log('  npm start [-- <options...>]');
-        console.log('\nOptions:');
-        console.log('  -h, --help          print this message and exit.');
-        console.log('  -v, --version       print the version and exit.');
-        console.log('  -f, --fullLog       enable full log, by default only errors are logged.');
-        console.log('  -p, --port [value]  specify a port to listen, process.env.PORT || 2333 by default.');
-        console.log('\nExamples:');
-        console.log('  $ npm start -- -p 43715               # listening to 43715');
-        console.log('  $ forever start app.js                # deploy with forever as daemon (root access recommended)');
-        console.log('  $ pm2 start -i 0 -n "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)');
-    }
+    console.log(
+`${`CSUEMS API v${require('./package').version}
+by The Liberators`.rainbow}${program.help ? '' :
+`
+
+Preparation:
+  ${'(This section is WIP)'.grey}
+
+Usage:
+  npm start [-- <options...>]
+
+Options:
+  -h, --help          print this message and exit.
+  -v, --version       print the version and exit.
+  -f, --fullLog       enable full log, by default only errors are logged.
+  -p, --port [value]  specify a port to listen, process.env.PORT || 2333 by default.
+
+Examples:
+  $ npm start -- -p 43715               # listening to 43715
+  $ forever start app.js                # deploy with forever as daemon (root access recommended)
+  $ pm2 start -i 0 -n "csuapi" app.js   # deploy with pm2 as daemon  (root access recommended)`}`);
     process.exit(0);
 }
 
@@ -63,7 +67,7 @@ const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
 var app = express();
 
 // 查成绩API，通过GET传入用户名和密码
-app.get(/\/[grades|g]$/, function (req, res, next) {
+app.get(/^\/g(?:|rades)$/, function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -160,7 +164,7 @@ app.get(/\/[grades|g]$/, function (req, res, next) {
 });
 
 // 查考试API，通过GET传入用户名和密码
-app.get(/\/[exams|e]$/, function (req, res, next) {
+app.get(/^\/e(?:|xams)$/, function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
