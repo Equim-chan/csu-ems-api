@@ -6,12 +6,20 @@
 
 # CSU-EMS API文档 #
 
-版本：2.2.0
+| Key | Value |
+|:---:| --- |
+| 远程仓库 | https://github.com/Equim-chan/csu-ems-api.git |
+| 当前版本 | 2.2.0 (170120) |
+| 维护者 | [Equim](https://github.com/Equim-chan) |
+| 许可协议 | [GPLv3](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE) |
 
+## 目录 ##
 - [获取成绩和挂科列表](#获取成绩和挂科列表)
 - [获取考试安排表](#获取考试安排表)
 - [选某一节课](#选某一节课)
 - [获取API文档](#获取api文档)
+
+---
 
 ### 获取成绩和挂科列表 ###
 * 路径: `/g` 或 `/grades`
@@ -78,6 +86,8 @@
 
 [↑返回顶端](#csu-ems-api文档)
 
+---
+
 ### 获取考试安排表 ###
 * 路径: `/e` 或 `/exams`
 * 方法: `GET`
@@ -125,13 +135,19 @@
 
 [↑返回顶端](#csu-ems-api文档)
 
+---
+
 ### 选某一节课 ###
 __尚未实现__
 
 [↑返回顶端](#csu-ems-api文档)
+
+---
 
 ### 获取API文档 ###
 * 路径：`/doc`
 * 方法：`GET`
 
 [↑返回顶端](#csu-ems-api文档)
+
+---

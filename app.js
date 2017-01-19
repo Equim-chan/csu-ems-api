@@ -64,11 +64,11 @@ const
         }
     },
     port = program.port || process.env.PORT || 2333,
-    fullLog = program.fullLog,
+    fullLog = !!program.fullLog,
     app = express();
 
 // 获取文档
-app.get('/doc', function (req, res, next) {
+app.get('/doc', function (req, res) {
     res.sendFile(__dirname + '/doc/API.html');
 });
 
