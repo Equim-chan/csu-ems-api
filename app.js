@@ -67,6 +67,11 @@ const
     fullLog = program.fullLog,
     app = express();
 
+// 获取文档
+app.get('/doc', function (req, res, next) {
+    res.sendFile(__dirname + '/doc/API.html');
+});
+
 // 查成绩API，通过GET传入用户名和密码
 app.get(/^\/g(?:|rades)$/, function (req, res, next) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
