@@ -1,5 +1,6 @@
 <!-- 用Markdown Preview渲染时注意：
-    * 将title改为"API文档"
+    * 将title改为"(っ'ヮ'c)"
+    * 可以加上ico，如<link rel="icon" href="http://equimcute.com/res/icon/head.ico" type="image/x-ico">
     * body的width改为55em
     * 将所有的"user-content-"字符串替换为空
 -->
@@ -44,43 +45,43 @@
 
   ```JavaScript
   {
-    "name": "该学生的名字",
-    "id":   "用户名",
-    "grades": {
-      "课程名称": {
-        "sem":     "获取该成绩的学期，注意，如果有补考记录，则只会记录成绩最高的那个",
-        "reg":     "平时成绩",
-        "exam":    "期末成绩",
-        "overall": "最终成绩",
-        "id":      "只在指定了details时包含。课程编号",
-        "attr":    "只在指定了details时包含。课程属性",
-        "genre":   "只在指定了details时包含。课程性质",
-        "credit":  "只在指定了details时包含。学分"
+    "name": "该学生的名字", //string
+    "id":   "用户名", //string
+    "grades": { //object
+      "课程名称": { //object
+        "sem":     "获取该成绩的学期，注意，如果有补考记录，则只会记录成绩最高的那个", //string
+        "reg":     "平时成绩", //string
+        "exam":    "期末成绩", //string
+        "overall": "最终成绩", //string
+        "id":      "只在指定了details时包含。课程编号", //string
+        "attr":    "只在指定了details时包含。课程属性", //string
+        "genre":   "只在指定了details时包含。课程性质", //string
+        "credit":  "只在指定了details时包含。学分" //string
       },
       // ...
     },
-    "subject-count": "有成绩科目的数量",
-    "failed": {
-      "课程名称": {
-        "sem":     "学期，同上",
-        "reg":     "平时成绩",
-        "exam":    "期末成绩",
-        "overall": "最终成绩",
-        "id":      "只在指定了details时包含。课程编号",
-        "attr":    "只在指定了details时包含。课程属性",
-        "genre":   "只在指定了details时包含。课程性质",
-        "credit":  "只在指定了details时包含。学分"
+    "subject-count": "有成绩科目的数量", //number
+    "failed": { //object
+      "课程名称": { //object
+        "sem":     "学期，同上", //string
+        "reg":     "平时成绩", //string
+        "exam":    "期末成绩", //string
+        "overall": "最终成绩", //string
+        "id":      "只在指定了details时包含。课程编号", //string
+        "attr":    "只在指定了details时包含。课程属性", //string
+        "genre":   "只在指定了details时包含。课程性质", //string
+        "credit":  "只在指定了details时包含。学分" //string
       },
       // ...
     },
-    "failed-count": "挂科科目的数量"
+    "failed-count": "挂科科目的数量" //number
   }
   ```
 * 失败返回:
 
   ```JavaScript
   {
-    "error": "错误原因"
+    "error": "错误原因" //string
   }
   ```
 
@@ -110,18 +111,18 @@
 
   ```JavaScript
   {
-    "name": "该学生的名字",
-    "id":   "用户名",
-    "sem":  "学期"
-    "exams": {
-      "科目名称": {
-        "time":     "考试时间",
-        "location": "考试地点",
-        "seat":     "座位号"
+    "name": "该学生的名字", //string
+    "id":   "用户名", //string
+    "sem":  "学期" //string
+    "exams": { //object
+      "科目名称": { //object
+        "time":     "考试时间", //string
+        "location": "考试地点", //string
+        "seat":     "座位号" //string
       },
       // ...
     },
-    "exams-count": "该学期的考试个数"
+    "exams-count": "该学期的考试个数" //number
   }
   ```
 
@@ -129,7 +130,7 @@
 
   ```JavaScript
   {
-    "error": "错误原因"
+    "error": "错误原因" //string
   }
   ```
 

@@ -860,7 +860,7 @@ body .markdown-body
   float: left;
   margin: 0.3em 0 0.25em -1.6em;
   vertical-align: middle;
-}</style><title>API文档</title></head><body><article class="markdown-body">
+}</style><title>(っ'ヮ'c)</title><link rel="icon" href="http://equimcute.com/res/icon/head.ico" type="image/x-ico"></head><body><article class="markdown-body">
 
 <h1>
 <a id="csu-ems-api文档" class="anchor" href="#csu-ems-api%E6%96%87%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CSU-EMS API文档</h1>
@@ -932,43 +932,43 @@ body .markdown-body
 <p>成功返回:</p>
 
 <div class="highlight highlight-source-js"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学生的名字<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>用户名<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>grades<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-    <span class="pl-s"><span class="pl-pds">"</span>课程名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-      <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>获取该成绩的学期，注意，如果有补考记录，则只会记录成绩最高的那个<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>reg<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>平时成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>exam<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>期末成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>overall<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>最终成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>      <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程编号<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>attr<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程属性<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>genre<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程性质<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>credit<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。学分<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学生的名字<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>用户名<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+  <span class="pl-s"><span class="pl-pds">"</span>grades<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+    <span class="pl-s"><span class="pl-pds">"</span>课程名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+      <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>获取该成绩的学期，注意，如果有补考记录，则只会记录成绩最高的那个<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>reg<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>平时成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>exam<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>期末成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>overall<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>最终成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>      <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程编号<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>attr<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程属性<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>genre<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程性质<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>credit<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。学分<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
     },
     <span class="pl-c"><span class="pl-c">//</span> ...</span>
   },
-  <span class="pl-s"><span class="pl-pds">"</span>subject-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>有成绩科目的数量<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>failed<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-    <span class="pl-s"><span class="pl-pds">"</span>课程名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-      <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>学期，同上<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>reg<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>平时成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>exam<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>期末成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>overall<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>最终成绩<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>      <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程编号<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>attr<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程属性<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>genre<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程性质<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>credit<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。学分<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>subject-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>有成绩科目的数量<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>number</span>
+  <span class="pl-s"><span class="pl-pds">"</span>failed<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+    <span class="pl-s"><span class="pl-pds">"</span>课程名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+      <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>学期，同上<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>reg<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>平时成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>exam<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>期末成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>overall<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>最终成绩<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>      <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程编号<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>attr<span class="pl-pds">"</span></span><span class="pl-k">:</span>    <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程属性<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>genre<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。课程性质<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>credit<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>只在指定了details时包含。学分<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
     },
     <span class="pl-c"><span class="pl-c">//</span> ...</span>
   },
-  <span class="pl-s"><span class="pl-pds">"</span>failed-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>挂科科目的数量<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>failed-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>挂科科目的数量<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>number</span>
 }</pre></div>
 </li>
 <li>
 <p>失败返回:</p>
 
 <div class="highlight highlight-source-js"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>error<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>错误原因<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>error<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>错误原因<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
 }</pre></div>
 </li>
 </ul>
@@ -1004,25 +1004,25 @@ body .markdown-body
 <p>成功返回:</p>
 
 <div class="highlight highlight-source-js"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学生的名字<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>用户名<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>学期<span class="pl-pds">"</span></span>
-  <span class="pl-s"><span class="pl-pds">"</span>exams<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-    <span class="pl-s"><span class="pl-pds">"</span>科目名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
-      <span class="pl-s"><span class="pl-pds">"</span>time<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>考试时间<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>location<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>考试地点<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>seat<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>座位号<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学生的名字<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span><span class="pl-k">:</span>   <span class="pl-s"><span class="pl-pds">"</span>用户名<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+  <span class="pl-s"><span class="pl-pds">"</span>sem<span class="pl-pds">"</span></span><span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">"</span>学期<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
+  <span class="pl-s"><span class="pl-pds">"</span>exams<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+    <span class="pl-s"><span class="pl-pds">"</span>科目名称<span class="pl-pds">"</span></span><span class="pl-k">:</span> { <span class="pl-c"><span class="pl-c">//</span>object</span>
+      <span class="pl-s"><span class="pl-pds">"</span>time<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>考试时间<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>location<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>考试地点<span class="pl-pds">"</span></span>, <span class="pl-c"><span class="pl-c">//</span>string</span>
+      <span class="pl-s"><span class="pl-pds">"</span>seat<span class="pl-pds">"</span></span><span class="pl-k">:</span>     <span class="pl-s"><span class="pl-pds">"</span>座位号<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
     },
     <span class="pl-c"><span class="pl-c">//</span> ...</span>
   },
-  <span class="pl-s"><span class="pl-pds">"</span>exams-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学期的考试个数<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>exams-count<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>该学期的考试个数<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>number</span>
 }</pre></div>
 </li>
 <li>
 <p>失败返回:</p>
 
 <div class="highlight highlight-source-js"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>error<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>错误原因<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>error<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>错误原因<span class="pl-pds">"</span></span> <span class="pl-c"><span class="pl-c">//</span>string</span>
 }</pre></div>
 </li>
 </ul>
