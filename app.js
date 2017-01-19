@@ -5,7 +5,8 @@
 
 'use strict';
 
-var express    = require('express'),
+const
+    express    = require('express'),
     superagent = require('superagent'),
     cheerio    = require('cheerio'),
     escaper    = require('true-html-escape'),
@@ -47,24 +48,24 @@ Examples:
     process.exit(0);
 }
 
-const timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
-      // 以系统时间获取当前学期
-      getSem = () => {
-          let now = new Date();
-          let month = now.getMonth();
-          let year = now.getFullYear();
-          if (month === 0) {
-              return (year - 1) + '-' + year + '-1';
-          } else if (month <= 6) {
-              return (year - 1) + '-' + year + '-2';
-          } else {
-              return year + '-' + (year + 1) + '-1';
-          }
-      },
-      port = program.port || process.env.PORT || 2333,
-      fullLog = program.fullLog;
-
-var app = express();
+const
+    timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
+    // 以系统时间获取当前学期
+    getSem = () => {
+        let now = new Date();
+        let month = now.getMonth();
+        let year = now.getFullYear();
+        if (month === 0) {
+            return (year - 1) + '-' + year + '-1';
+        } else if (month <= 6) {
+            return (year - 1) + '-' + year + '-2';
+        } else {
+            return year + '-' + (year + 1) + '-1';
+        }
+    },
+    port = program.port || process.env.PORT || 2333,
+    fullLog = program.fullLog,
+    app = express();
 
 // 查成绩API，通过GET传入用户名和密码
 app.get(/^\/g(?:|rades)$/, function (req, res, next) {
@@ -116,6 +117,7 @@ app.get(/^\/g(?:|rades)$/, function (req, res, next) {
                         return;
                     }
                     let element = $(this).find('td');
+
                     let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
 
                     let item = {
@@ -132,6 +134,7 @@ app.get(/^\/g(?:|rades)$/, function (req, res, next) {
                     }
 
                     // 如果有补考记录，则以最高分的为准
+                    // 这段代码是拿可读性换了时间复杂度……
                     if (title in result.grades) {
                         // 暂不考虑NaN
                         if (item.overall < result.grades[title].overall) {
@@ -177,7 +180,6 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
         if (fullLog) {
             console.log(`${timeStamp()} Successfully logged in.`.green);
         }
-
         superagent
             .post('http://csujwc.its.csu.edu.cn/jsxsd/xsks/xsksap_list')
             .set(headers)
