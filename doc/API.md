@@ -10,7 +10,7 @@
 | Key | Value |
 |:---:| --- |
 | 远程仓库 | https://github.com/Equim-chan/csu-ems-api.git |
-| 当前版本 | 2.2.0 (170120) |
+| 当前版本 | 2.2.1 (170121) |
 | 维护者 | [Equim](https://github.com/Equim-chan) |
 | 许可协议 | [GPLv3](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE) |
 

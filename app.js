@@ -106,7 +106,6 @@ app.get(/^\/g(?:|rades)$/, function (req, res, next) {
                 }
 
                 let $ = cheerio.load(iires.text);
-
                 let result = {
                     name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
                     id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
@@ -124,7 +123,6 @@ app.get(/^\/g(?:|rades)$/, function (req, res, next) {
                     let element = $(this).find('td');
 
                     let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
-
                     let item = {
                         sem: escaper.unescape(element.eq(2).text()),
                         reg: escaper.unescape(element.eq(4).text()),
@@ -158,13 +156,15 @@ app.get(/^\/g(?:|rades)$/, function (req, res, next) {
                 result['subject-count'] = Object.keys(result.grades).length;
                 result['failed-count'] = Object.keys(result.failed).length;
 
+                // 返回JSON
+                res.send(JSON.stringify(result));
+                if (fullLog) {
+                    console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
+                }
+
                 access.logout(headers, res, function() {
-                    // 返回JSON
-                    res.send(JSON.stringify(result));
                     if (fullLog) {
-                        console.log(`${timeStamp()} Successfully logged out: `.green +
-                            req.query.id.yellow +
-                            ` (processed in ${new Date() - start} ms)`.green);
+                        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
                     }
                 });
             });
@@ -205,7 +205,6 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
                 }
 
                 let $ = cheerio.load(iires.text);
-
                 let result = {
                     name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
                     id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
@@ -219,8 +218,8 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
                         return;
                     }
                     let element = $(this).find('td');
-                    let title = escaper.unescape(element.eq(3).text());
 
+                    let title = escaper.unescape(element.eq(3).text());
                     let item = {
                         time: escaper.unescape(element.eq(4).text()),
                         location: escaper.unescape(element.eq(5).text()),
@@ -231,12 +230,14 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
                     result['exams-count']++;
                 });
 
+                res.send(JSON.stringify(result));
+                if (fullLog) {
+                    console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
+                }
+
                 access.logout(headers, res, function() {
-                    res.send(JSON.stringify(result));
                     if (fullLog) {
-                        console.log(`${timeStamp()} Successfully logged out: `.green +
-                            req.query.id.yellow +
-                            ` (processed in ${new Date() - start} ms)`.green);
+                        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
                     }
                 });
             });
