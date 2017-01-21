@@ -67,30 +67,28 @@ const
             return year + '-' + (year + 1) + '-1';
         }
     },
+    fullLogging = log => {
+        if (!program.fullLog) return;
+        console.log(`${timeStamp()} ${log}`);
+    },
+//    wait = ms => callback => setTimeout(callback, ms),
     port = program.port || process.env.PORT || 2333,
-    fullLog = !!program.fullLog,
     app = express();
 
 // 获取文档
-app.get('/doc', (req, res) => {
-    res.sendFile(__dirname + '/doc/API.html');
-});
+app.get('/doc', (req, res) => res.sendFile(__dirname + '/doc/API.html'));
 
 // 查成绩API，通过GET传入用户名和密码
-app.get(/^\/g(?:|rades)$/, (req, res, next) => co (function *() {
+app.get(/^\/g(?:|rades)$/, (req, res) => co (function *() {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
     }
-    if (fullLog) {
-        var start = new Date();
-        console.log(`${timeStamp()} Started to query the grades: `.cyan + req.query.id.yellow);
-    }
+    var start = new Date();
+    fullLogging('Started to query the grades: '.cyan + req.query.id.yellow);
 
     let headers = yield access.login(req.query.id, req.query.pwd, res);
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully logged in.`.green);
-    }
+    fullLogging('Successfully logged in.'.green);
 
     let ires;
     try {
@@ -106,11 +104,15 @@ app.get(/^\/g(?:|rades)$/, (req, res, next) => co (function *() {
     } catch (err) {
         console.log(`${timeStamp()} Failed to get grades page\n${err.stack}`.red);
         res.status(404).send({ error: '无法进入成绩页面' });
-        return next(err);
+        return;
+    } finally {
+        // 直接异步进行……
+        co(function *() {
+            yield access.logout(headers, res);
+            fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+        });
     }
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully entered grades page.`.green);
-    }
+    fullLogging('Successfully entered grades page.'.green);
 
     let $ = cheerio.load(ires.text);
     let result = {
@@ -163,31 +165,20 @@ app.get(/^\/g(?:|rades)$/, (req, res, next) => co (function *() {
     result['failed-count'] = Object.keys(result.failed).length;
 
     res.send(JSON.stringify(result));
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
-    }
-
-    yield access.logout(headers, res);
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
-    }
+    fullLogging(`Successfully responded. (req -> res processed in ${new Date() - start} ms)`.green);
 }));
 
 // 查考试API，通过GET传入用户名和密码
-app.get(/^\/e(?:|xams)$/, (req, res, next) => co(function *() {
+app.get(/^\/e(?:|xams)$/, (req, res) => co(function *() {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
     }
-    if (fullLog) {
-        var start = new Date();
-        console.log(`${timeStamp()} Started to query the exams: `.cyan + req.query.id.yellow);
-    }
+    var start = new Date();
+    fullLogging('Started to query the exams: '.cyan + req.query.id.yellow);
 
-    let headers = yield access.login(req.query.id, req.query.pwd, res);
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully logged in.`.green);
-    }
+    let headers = yield access.login(req.query.id, req.query.pwd, res);    
+    fullLogging('Successfully logged in.'.green);
 
     let ires;
     try {
@@ -203,12 +194,15 @@ app.get(/^\/e(?:|xams)$/, (req, res, next) => co(function *() {
             .endThunk();
     } catch (err) {
         console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
-        res.status(404).send({ error: '获取成绩失败' });
-        return next(err);
+        res.status(404).send({ error: '无法进入考试页面' });
+        return;
+    } finally {
+        co(function *() {
+            yield access.logout(headers, res);
+            fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+        });
     }
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully entered exams page.`.green);
-    }
+    fullLogging('Successfully entered exams page.'.green);
 
     let $ = cheerio.load(ires.text);
     let result = {
@@ -236,16 +230,9 @@ app.get(/^\/e(?:|xams)$/, (req, res, next) => co(function *() {
     });
 
     res.send(JSON.stringify(result));
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
-    }
-
-    yield access.logout(headers, res);
-    if (fullLog) {
-        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
-    }
+    fullLogging(`Successfully responded. (req -> res processed in ${new Date() - start} ms)`.green);
 }));
 
 app.listen(port, () => {
-    console.log(`${timeStamp()} The API is now running on port ${port}. Full logging is ${fullLog ? 'enabled' : 'disabled'}`.green);
+    console.log(timeStamp() + ` The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
 });
