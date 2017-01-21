@@ -13,7 +13,8 @@ const
     colors     = require('colors'),
     program    = require('commander'),
     moment     = require('moment'),
-    async      = require('async'),
+    co         = require('co'),
+    thunkify   = require('thunkify'),
     access     = require('./lib/access.js');
 
 program
@@ -49,6 +50,8 @@ Examples:
     process.exit(0);
 }
 
+superagent.Request.prototype.endThunk = thunkify(superagent.Request.prototype.end);
+
 const
     timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
     // 以系统时间获取当前学期
@@ -69,112 +72,109 @@ const
     app = express();
 
 // 获取文档
-app.get('/doc', function (req, res) {
+app.get('/doc', (req, res) => {
     res.sendFile(__dirname + '/doc/API.html');
 });
 
 // 查成绩API，通过GET传入用户名和密码
-app.get(/^\/g(?:|rades)$/, function (req, res, next) {
+app.get(/^\/g(?:|rades)$/, (req, res, next) => co (function *() {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
     }
-
     if (fullLog) {
         var start = new Date();
         console.log(`${timeStamp()} Started to query the grades: `.cyan + req.query.id.yellow);
     }
 
-    async.waterfall([
-        cb => access.login(req.query.id, req.query.pwd, res, cb),
-        (headers, cb) => {
-            if (fullLog) {
-                console.log(`${timeStamp()} Successfully logged in.`.green);
-            }
+    let headers = yield access.login(req.query.id, req.query.pwd, res);
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully logged in.`.green);
+    }
 
-            // 实际上xnxq01id为空的时候和GET这个URL的效果是一样的，都是查询所有学期
-            superagent
-                .post('http://csujwc.its.csu.edu.cn/jsxsd/kscj/yscjcx_list')
-                .set(headers)
-                .type('form')
-                .send({
-                    xnxq01id: req.query.sem
-                })
-                .end((err, ires) => cb(err, headers, ires));
-        }, (headers, ires, cb) => {
-            if (fullLog) {
-                console.log(`${timeStamp()} Successfully entered grades page.`.green);
-            }
+    let ires;
+    try {
+        // 实际上xnxq01id为空的时候和GET这个URL的效果是一样的，都是查询所有学期
+        ires = yield superagent
+            .post('http://csujwc.its.csu.edu.cn/jsxsd/kscj/yscjcx_list')
+            .set(headers)
+            .type('form')
+            .send({
+                xnxq01id: req.query.sem
+            })
+            .endThunk();
+    } catch (err) {
+        console.log(`${timeStamp()} Failed to get grades page\n${err.stack}`.red);
+        res.status(404).send({ error: '无法进入成绩页面' });
+        return next(err);
+    }
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully entered grades page.`.green);
+    }
 
-            let $ = cheerio.load(ires.text);
-
-            let result = {
-                name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
-                id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
-                grades: {},
-                'subject-count': 0,
-                failed: {},
-                'failed-count': 0,
-            };
-
-            // 获取成绩列表
-            $('#dataList tr').each(function (index) {
-                if (index === 0) {
-                    return;
-                }
-                let element = $(this).find('td');
-
-                let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
-
-                let item = {
-                    sem: escaper.unescape(element.eq(2).text()),
-                    reg: escaper.unescape(element.eq(4).text()),
-                    exam: escaper.unescape(element.eq(5).text()),
-                    overall: escaper.unescape(element.eq(6).text())
-                };
-                if (req.query.details) {
-                    item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
-                    item.attr = escaper.unescape(element.eq(8).text());
-                    item.genre = escaper.unescape(element.eq(9).text());
-                    item.credit = escaper.unescape(element.eq(7).text());
-                }
-
-                // 如果有补考记录，则以最高分的为准
-                // 这段代码是拿可读性换了时间复杂度……
-                if (title in result.grades) {
-                    // 暂不考虑NaN
-                    if (item.overall < result.grades[title].overall) {
-                        return;
-                    }
-                    if (!element.eq(6).css('color')) {
-                        delete result.failed[title];
-                    }
-                } else if (element.eq(6).css('color')) {
-                    result.failed[title] = item;
-                }
-
-                result.grades[title] = item;
-            });
-
-            result['subject-count'] = Object.keys(result.grades).length;
-            result['failed-count'] = Object.keys(result.failed).length;
-
-            access.logout(headers, res, () => cb(null, result));
-        }, (result) => {
-            res.send(JSON.stringify(result));
-            if (fullLog) {
-                console.log(`${timeStamp()} Successfully logged out: `.green +
-                    req.query.id.yellow +
-                    ` (processed in ${new Date() - start} ms)`.green);
-            }
+    let $ = cheerio.load(ires.text);
+    let result = {
+        name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
+        id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
+        grades: {},
+        'subject-count': 0,
+        failed: {},
+        'failed-count': 0,
+    };
+    // 获取成绩列表
+    $('#dataList tr').each(function (index) {
+        if (index === 0) {
+            return;
         }
-    ], function (err) {
-        console.log(`async error\n ${err.stack}`);
+        let element = $(this).find('td');
+
+        let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
+        let item = {
+            sem: escaper.unescape(element.eq(2).text()),
+            reg: escaper.unescape(element.eq(4).text()),
+            exam: escaper.unescape(element.eq(5).text()),
+            overall: escaper.unescape(element.eq(6).text())
+        };
+        if (req.query.details) {
+            item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
+            item.attr = escaper.unescape(element.eq(8).text());
+            item.genre = escaper.unescape(element.eq(9).text());
+            item.credit = escaper.unescape(element.eq(7).text());
+        }
+
+        // 如果有补考记录，则以最高分的为准
+        // 这段代码是拿可读性换了时间复杂度……
+        if (title in result.grades) {
+            // 暂不考虑NaN
+            if (item.overall < result.grades[title].overall) {
+                return;
+            }
+            if (!element.eq(6).css('color')) {
+                delete result.failed[title];
+            }
+        } else if (element.eq(6).css('color')) {
+            result.failed[title] = item;
+        }
+
+        result.grades[title] = item;
     });
-});
+
+    result['subject-count'] = Object.keys(result.grades).length;
+    result['failed-count'] = Object.keys(result.failed).length;
+
+    res.send(JSON.stringify(result));
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
+    }
+
+    yield access.logout(headers, res);
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
+    }
+}));
 
 // 查考试API，通过GET传入用户名和密码
-app.get(/^\/e(?:|xams)$/, function (req, res, next) {
+app.get(/^\/e(?:|xams)$/, (req, res, next) => co(function *() {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -183,11 +183,15 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
         var start = new Date();
         console.log(`${timeStamp()} Started to query the exams: `.cyan + req.query.id.yellow);
     }
-    access.login(req.query.id, req.query.pwd, res, function (headers) {
-        if (fullLog) {
-            console.log(`${timeStamp()} Successfully logged in.`.green);
-        }
-        superagent
+
+    let headers = yield access.login(req.query.id, req.query.pwd, res);
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully logged in.`.green);
+    }
+
+    let ires;
+    try {
+        ires = yield superagent
             .post('http://csujwc.its.csu.edu.cn/jsxsd/xsks/xsksap_list')
             .set(headers)
             .type('form')
@@ -196,54 +200,51 @@ app.get(/^\/e(?:|xams)$/, function (req, res, next) {
                 xnxqid: req.query.sem || getSem(),
                 xqlb: ''
             })
-            .end(function (err, iires) {
-                if (err) {
-                    console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
-                    res.status(404).send({ error: '获取成绩失败' });
-                    return next(err);
-                }
-                if (fullLog) {
-                    console.log(`${timeStamp()} Successfully entered exams page.`.green);
-                }
+            .endThunk();
+    } catch (err) {
+        console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
+        res.status(404).send({ error: '获取成绩失败' });
+        return next(err);
+    }
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully entered exams page.`.green);
+    }
 
-                let $ = cheerio.load(iires.text);
+    let $ = cheerio.load(ires.text);
+    let result = {
+        name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
+        id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
+        sem: req.query.sem || getSem(),
+        exams: {},
+        'exams-count': 0,
+    };
+    $('#dataList tr').each(function (index) {
+        if (index === 0) {
+            return;
+        }
+        let element = $(this).find('td');
+        let title = escaper.unescape(element.eq(3).text());
 
-                let result = {
-                    name: escaper.unescape($('#Top1_divLoginName').text().match(/\s.+\(/)[0].replace(/\s|\(/g, '')),
-                    id: escaper.unescape($('#Top1_divLoginName').text().match(/\(.+\)/)[0].replace(/\(|\)/g, '')),
-                    sem: req.query.sem || getSem(),
-                    exams: {},
-                    'exams-count': 0,
-                };
+        let item = {
+            time: escaper.unescape(element.eq(4).text()),
+            location: escaper.unescape(element.eq(5).text()),
+            seat: escaper.unescape(element.eq(6).text())
+        };
 
-                $('#dataList tr').each(function (index) {
-                    if (index === 0) {
-                        return;
-                    }
-                    let element = $(this).find('td');
-                    let title = escaper.unescape(element.eq(3).text());
-
-                    let item = {
-                        time: escaper.unescape(element.eq(4).text()),
-                        location: escaper.unescape(element.eq(5).text()),
-                        seat: escaper.unescape(element.eq(6).text())
-                    };
-
-                    result.exams[title] = item;
-                    result['exams-count']++;
-                });
-
-                access.logout(headers, res, function() {
-                    res.send(JSON.stringify(result));
-                    if (fullLog) {
-                        console.log(`${timeStamp()} Successfully logged out: `.green +
-                            req.query.id.yellow +
-                            ` (processed in ${new Date() - start} ms)`.green);
-                    }
-                });
-            });
+        result.exams[title] = item;
+        result['exams-count']++;
     });
-});
+
+    res.send(JSON.stringify(result));
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully responded. (processed in ${new Date() - start} ms)`.green);
+    }
+
+    yield access.logout(headers, res);
+    if (fullLog) {
+        console.log(`${timeStamp()} Successfully logged out: `.green + req.query.id.yellow);
+    }
+}));
 
 app.listen(port, () => {
     console.log(`${timeStamp()} The API is now running on port ${port}. Full logging is ${fullLog ? 'enabled' : 'disabled'}`.green);
