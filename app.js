@@ -9,7 +9,6 @@ const
     express    = require('express'),
     superagent = require('superagent'),
     cheerio    = require('cheerio'),
-    escaper    = require('true-html-escape'),
     colors     = require('colors'),
     program    = require('commander'),
     moment     = require('moment'),
@@ -77,7 +76,7 @@ const
 app.get('/doc', (req, res) => res.sendFile(__dirname + '/doc/API.html'));
 
 // 查成绩API，通过GET传入用户名和密码
-app.get(/^\/g(?:|rades)$/, (req, res) => co(function* () {
+app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -86,7 +85,9 @@ app.get(/^\/g(?:|rades)$/, (req, res) => co(function* () {
     let start = new Date();
     fullLogging('Started to query the grades: '.cyan + req.query.id.yellow);
 
-    let headers = yield access.login(req.query.id, req.query.pwd, res);
+    let headers;
+    try { headers = yield access.login(req.query.id, req.query.pwd, res); }
+    catch (err) { return; }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -113,7 +114,7 @@ app.get(/^\/g(?:|rades)$/, (req, res) => co(function* () {
 
     let $ = cheerio.load(ires.text);
 
-    let top = escaper.unescape($('#Top1_divLoginName').text());
+    let top = $('#Top1_divLoginName').text();
     let result = {
         name: top.match(/\s.+\(/)[0].replace(/\s|\(/g, ''),
         id: top.match(/\(.+\)/)[0].replace(/\(|\)/g, ''),
@@ -124,23 +125,22 @@ app.get(/^\/g(?:|rades)$/, (req, res) => co(function* () {
     };
     // 获取成绩列表
     $('#dataList tr').each(function (index) {
-        if (index === 0) {
-            return;
-        }
+        if (index === 0) return;
+
         let element = $(this).find('td');
 
-        let title = escaper.unescape(element.eq(3).text().match(/].+$/)[0].substring(1));
+        let title = element.eq(3).text().match(/].+$/)[0].substring(1);
         let item = {
-            sem: escaper.unescape(element.eq(2).text()),
-            reg: escaper.unescape(element.eq(4).text()),
-            exam: escaper.unescape(element.eq(5).text()),
-            overall: escaper.unescape(element.eq(6).text())
+            sem: element.eq(2).text(),
+            reg: element.eq(4).text(),
+            exam: element.eq(5).text(),
+            overall: element.eq(6).text()
         };
         if (req.query.details) {
-            item.id = escaper.unescape(element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, ''));
-            item.attr = escaper.unescape(element.eq(8).text());
-            item.genre = escaper.unescape(element.eq(9).text());
-            item.credit = escaper.unescape(element.eq(7).text());
+            item.id = element.eq(3).text().match(/\[.+\]/)[0].replace(/\[|\]/g, '');
+            item.attr = element.eq(8).text();
+            item.genre = element.eq(9).text();
+            item.credit = element.eq(7).text();
         }
 
         // 如果有补考记录，则以最高分的为准
@@ -169,7 +169,7 @@ app.get(/^\/g(?:|rades)$/, (req, res) => co(function* () {
 }));
 
 // 查考试API，通过GET传入用户名和密码
-app.get(/^\/e(?:|xams)$/, (req, res) => co(function* () {
+app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -178,7 +178,9 @@ app.get(/^\/e(?:|xams)$/, (req, res) => co(function* () {
     let start = new Date();
     fullLogging('Started to query the exams: '.cyan + req.query.id.yellow);
 
-    let headers = yield access.login(req.query.id, req.query.pwd, res);    
+    let headers;
+    try { headers = yield access.login(req.query.id, req.query.pwd, res); }
+    catch (err) { return; }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -208,7 +210,7 @@ app.get(/^\/e(?:|xams)$/, (req, res) => co(function* () {
 
     let $ = cheerio.load(ires.text);
 
-    let top = escaper.unescape($('#Top1_divLoginName').text());
+    let top = $('#Top1_divLoginName').text();
     let result = {
         name: top.match(/\s.+\(/)[0].replace(/\s|\(/g, ''),
         id: top.match(/\(.+\)/)[0].replace(/\(|\)/g, ''),
@@ -217,16 +219,15 @@ app.get(/^\/e(?:|xams)$/, (req, res) => co(function* () {
         'exams-count': 0,
     };
     $('#dataList tr').each(function (index) {
-        if (index === 0) {
-            return;
-        }
+        if (index === 0) return;
+
         let element = $(this).find('td');
 
-        let title = escaper.unescape(element.eq(3).text());
+        let title = element.eq(3).text();
         let item = {
-            time: escaper.unescape(element.eq(4).text()),
-            location: escaper.unescape(element.eq(5).text()),
-            seat: escaper.unescape(element.eq(6).text())
+            time: element.eq(4).text(),
+            location: element.eq(5).text(),
+            seat: element.eq(6).text()
         };
 
         result.exams[title] = item;
