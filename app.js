@@ -56,9 +56,8 @@ const
         let year = now.getFullYear();
         if (month <= 6) {
             return `${year - 1}-${year}-${month > 0 ? 2 : 1}`;
-        } else {
-            return `${year}-${year + 1}-1`;
         }
+        return `${year}-${year + 1}-1`;
     },
 //  wait = (ms) => (callback) => setTimeout(callback, ms),
     port = program.port || process.env.PORT || 2333,
@@ -79,8 +78,12 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
 
     let headers;
     try {
-        headers = yield access.login(req.query.id, req.query.pwd, res);
-    } catch (err) { return; }
+        headers = yield access.login(req.query.id, req.query.pwd);
+    } catch (errMsg) {
+        logging(errMsg.inner.red);
+        res.status(404).send({ error: errMsg.public });
+        return;
+    }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -93,14 +96,18 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
             .send({ xnxq01id: req.query.sem })
             .endThunk();
     } catch (err) {
-        logging(` Failed to get grades page\n${err.stack}`.red);
+        logging(`Failed to get grades page\n${err.stack}`.red);
         res.status(404).send({ error: '无法进入成绩页面' });
         return;
     } finally {
         // 直接异步进行?
         co(function *() {
-            yield access.logout(headers);
-            fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+            try {
+                yield access.logout(headers);
+                fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+            } catch (errMsg) {
+                logging(errMsg.inner.red);
+            }
         });
     }
     fullLogging('Successfully entered grades page.'.green);
@@ -172,8 +179,12 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
 
     let headers;
     try {
-        headers = yield access.login(req.query.id, req.query.pwd, res);
-    } catch (err) { return; }
+        headers = yield access.login(req.query.id, req.query.pwd);
+    } catch (errMsg) {
+        logging(errMsg.inner.red);
+        res.status(404).send({ error: errMsg.public });
+        return;
+    }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -190,13 +201,17 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
             })
             .endThunk();
     } catch (err) {
-        logging(` Failed to reach exams page\n${err.stack}`.red);
+        logging(`Failed to reach exams page\n${err.stack}`.red);
         res.status(404).send({ error: '无法进入考试页面' });
         return;
     } finally {
         co(function *() {
-            yield access.logout(headers);
-            fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+            try {
+                yield access.logout(headers);
+                fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+            } catch (errMsg) {
+                logging(errMsg.inner.red);
+            }
         });
     }
     fullLogging('Successfully entered exams page.'.green);
@@ -234,5 +249,5 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
 }));
 
 app.listen(port, () => {
-    logging(` The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
+    logging(`The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
 });
