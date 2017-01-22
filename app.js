@@ -47,8 +47,8 @@ Examples:
 superagent.Request.prototype.endThunk = thunkify(superagent.Request.prototype.end);
 
 const
-    logging = log => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
-    fullLogging = log => program.fullLog && logging(log),
+    logging = (log) => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
+    fullLogging = (log) => program.fullLog && logging(log),
     getSem = () => {
         // 以系统时间获取当前学期
         let now = new Date();
@@ -60,7 +60,7 @@ const
             return `${year}-${year + 1}-1`;
         }
     },
-//  wait = ms => callback => setTimeout(callback, ms),
+//  wait = (ms) => (callback) => setTimeout(callback, ms),
     port = program.port || process.env.PORT || 2333,
     app = express();
 
@@ -68,7 +68,7 @@ const
 app.get('/doc', (req, res) => res.sendFile(`${__dirname}/doc/API.html`));
 
 // 查成绩API，通过GET传入用户名和密码
-app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
+app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -98,7 +98,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
         return;
     } finally {
         // 直接异步进行?
-        co(function* () {
+        co(function *() {
             yield access.logout(headers);
             fullLogging('Successfully logged out: '.green + req.query.id.yellow);
         });
@@ -118,7 +118,9 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
     };
     // 获取成绩列表
     $('#dataList tr').each(function (index) {
-        if (index === 0) return;
+        if (index === 0) {
+            return;
+        }
 
         let element = $(this).find('td');
 
@@ -136,22 +138,19 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
             item.credit = element.eq(7).text();
         }
 
-        // 如果有补考记录，则以最高分的为准
-        // 这段代码是拿可读性换了时间复杂度……
-        if (title in result.grades) {
-            // 暂不考虑NaN
-            if (item.overall < result.grades[title].overall) {
-                return;
-            }
-            // 如果新的成绩不是挂科的
-            if (!element.eq(6).css('color')) {
-                delete result.failed[title];
-            }
-        } else if (element.eq(6).css('color')) {
-            result.failed[title] = item;
+        // 如果有补考记录，则以最高分的为准(暂不考虑NaN)
+        if (title in result.grades && item.overall < result.grades[title].overall) {
+            return;
         }
 
         result.grades[title] = item;
+
+        // 挂科判定
+        if (element.eq(6).css('color')) {
+            result.failed[title] = item;
+        } else {
+            delete result.failed[title];
+        }
     });
 
     result['subject-count'] = Object.keys(result.grades).length;
@@ -162,7 +161,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
 }));
 
 // 查考试API，通过GET传入用户名和密码
-app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
+app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
     if (!req.query.id || !req.query.pwd || (req.query.sem && !(/^20\d{2}-20\d{2}-[1-2]$/).test(req.query.sem))) {
         res.status(404).send({ error: "参数不正确" });
         return;
@@ -195,7 +194,7 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
         res.status(404).send({ error: '无法进入考试页面' });
         return;
     } finally {
-        co(function* () {
+        co(function *() {
             yield access.logout(headers);
             fullLogging('Successfully logged out: '.green + req.query.id.yellow);
         });
@@ -213,7 +212,9 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
         'exams-count': 0,
     };
     $('#dataList tr').each(function (index) {
-        if (index === 0) return;
+        if (index === 0) {
+            return;
+        }
 
         let element = $(this).find('td');
 
