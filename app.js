@@ -1,8 +1,3 @@
-/* TODO
- * 完善异常处理
- * 建立用户名-Cookie数据库
- */
-
 'use strict';
 
 const
@@ -52,9 +47,10 @@ Examples:
 superagent.Request.prototype.endThunk = thunkify(superagent.Request.prototype.end);
 
 const
-    timeStamp = () => moment().format('[[]YY-MM-DD HH:mm:ss[]]'),
-    // 以系统时间获取当前学期
+    logging = log => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`),
+    fullLogging = log => program.fullLog && logging(log),
     getSem = () => {
+        // 以系统时间获取当前学期
         let now = new Date();
         let month = now.getMonth();
         let year = now.getFullYear();
@@ -64,16 +60,12 @@ const
             return `${year}-${year + 1}-1`;
         }
     },
-    fullLogging = log => {
-        if (!program.fullLog) return;
-        console.log(`${timeStamp()} ${log}`);
-    },
-//    wait = ms => callback => setTimeout(callback, ms),
+//  wait = ms => callback => setTimeout(callback, ms),
     port = program.port || process.env.PORT || 2333,
     app = express();
 
 // 获取文档
-app.get('/doc', (req, res) => res.sendFile(__dirname + '/doc/API.html'));
+app.get('/doc', (req, res) => res.sendFile(`${__dirname}/doc/API.html`));
 
 // 查成绩API，通过GET传入用户名和密码
 app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
@@ -86,8 +78,9 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
     fullLogging('Started to query the grades: '.cyan + req.query.id.yellow);
 
     let headers;
-    try { headers = yield access.login(req.query.id, req.query.pwd, res); }
-    catch (err) { return; }
+    try {
+        headers = yield access.login(req.query.id, req.query.pwd, res);
+    } catch (err) { return; }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -100,7 +93,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function* (req, res) {
             .send({ xnxq01id: req.query.sem })
             .endThunk();
     } catch (err) {
-        console.log(`${timeStamp()} Failed to get grades page\n${err.stack}`.red);
+        logging(` Failed to get grades page\n${err.stack}`.red);
         res.status(404).send({ error: '无法进入成绩页面' });
         return;
     } finally {
@@ -179,8 +172,9 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
     fullLogging('Started to query the exams: '.cyan + req.query.id.yellow);
 
     let headers;
-    try { headers = yield access.login(req.query.id, req.query.pwd, res); }
-    catch (err) { return; }
+    try {
+        headers = yield access.login(req.query.id, req.query.pwd, res);
+    } catch (err) { return; }
     fullLogging('Successfully logged in.'.green);
 
     let ires;
@@ -197,7 +191,7 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
             })
             .endThunk();
     } catch (err) {
-        console.log(`${timeStamp()} Failed to reach exams page\n${err.stack}`.red);
+        logging(` Failed to reach exams page\n${err.stack}`.red);
         res.status(404).send({ error: '无法进入考试页面' });
         return;
     } finally {
@@ -239,5 +233,5 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function* (req, res) {
 }));
 
 app.listen(port, () => {
-    console.log(timeStamp() + ` The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
+    logging(` The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
 });

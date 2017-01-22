@@ -1,8 +1,8 @@
 <!-- 用Markdown Preview渲染时注意：
-    * 将title改为"(っ'ヮ'c)"
-    * 可以加上ico，如<link rel="icon" href="http://equimcute.com/res/icon/head.ico" type="image/x-ico">
     * body的width改为55em
     * 将所有的"user-content-"字符串替换为空
+    * 将title改为"(っ'ヮ'c)"
+    * 可以加上ico，如<link rel="icon" href="http://equimcute.com/res/icon/head.ico" type="image/x-ico">
 -->
 
 # CSU-EMS API文档 #
@@ -10,7 +10,7 @@
 | Key | Value |
 |:---:| --- |
 | 远程仓库 | https://github.com/Equim-chan/csu-ems-api.git |
-| 当前版本 | 2.2.0 (170120) |
+| 当前版本 | 2.2.5 (170122) |
 | 维护者 | [Equim](https://github.com/Equim-chan) |
 | 许可协议 | [GPLv3](https://github.com/Equim-chan/csu-ems-api/blob/master/LICENSE) |
 
@@ -18,7 +18,7 @@
 - [获取成绩和挂科列表](#获取成绩和挂科列表)
 - [获取考试安排表](#获取考试安排表)
 - [选某一节课](#选某一节课)
-- [获取API文档](#获取api文档)
+- [获取API文档(HTML格式)](#获取api文档html格式)
 
 ---
 
@@ -145,9 +145,10 @@ __尚未实现__
 
 ---
 
-### 获取API文档 ###
+### 获取API文档(HTML格式) ###
 * 路径：`/doc`
 * 方法：`GET`
+* 返回：(该HTML页面)
 
 [↑返回顶端](#csu-ems-api文档)
 
