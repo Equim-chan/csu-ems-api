@@ -12,9 +12,9 @@ const express    = require('express'),
 
 program
     .option('-h, --help')
-    .option('-v, --version')
+    .option('-V, --version')
     .option('-p, --port [value]', parseInt)
-    .option('-f, --fullLog')
+    .option('-v, --verbose')
     .parse(process.argv);
 
 if (!program.help || !program.version) {
@@ -31,8 +31,8 @@ Usage:
 
 Options:
   -h, --help          print this message and exit.
-  -v, --version       print the version and exit.
-  -f, --fullLog       enable full log, by default only errors are logged.
+  -V, --version       print the version and exit.
+  -v, --verbose       enable verbose log, by default only errors are logged.
   -p, --port [value]  specify a port to listen, process.env.PORT || 2333 by default.
 
 Examples:
@@ -49,7 +49,7 @@ const port = program.port || process.env.PORT || 2333,
 
 const logging = (log) => console.log(`${moment().format('[[]YY-MM-DD HH:mm:ss[]]')} ${log}`);
 
-const fullLogging = (log) => program.fullLog && logging(log);
+const verbose = (log) => program.verbose && logging(log);
 
 // 根据系统时间计算当前学期
 const getSem = () => {
@@ -72,7 +72,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
 
     // 记录处理用时
     let start = new Date();
-    fullLogging('Started to query the grades: '.cyan + req.query.id.yellow);
+    verbose('Started to query the grades: '.cyan + req.query.id.yellow);
 
     // 登录，获取headers
     let headers;
@@ -83,7 +83,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
         res.status(404).json({ error: errMsg.public });
         return;
     }
-    fullLogging('Successfully logged in.'.green);
+    verbose('Successfully logged in.'.green);
 
     // 进入成绩页面
     let ires;
@@ -108,10 +108,10 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
                 logging(errMsg.inner.red);
                 return;
             }
-            fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+            verbose('Successfully logged out: '.green + req.query.id.yellow);
         });
     }
-    fullLogging('Successfully entered grades page.'.green);
+    verbose('Successfully entered grades page.'.green);
 
     let $ = cheerio.load(ires.text);
 
@@ -165,7 +165,7 @@ app.get(/^\/g(?:|rades)$/, co.wrap(function *(req, res) {
     result['failed-count'] = Object.keys(result.failed).length;
 
     res.json(result);
-    fullLogging(`Successfully responded. (req -> res processed in ${new Date() - start}ms)`.green);
+    verbose(`Successfully responded. (req -> res processed in ${new Date() - start}ms)`.green);
 }));
 
 // 查考试API，通过GET传入用户名和密码
@@ -176,7 +176,7 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
     }
 
     let start = new Date();
-    fullLogging('Started to query the exams: '.cyan + req.query.id.yellow);
+    verbose('Started to query the exams: '.cyan + req.query.id.yellow);
 
     let headers;
     try {
@@ -186,7 +186,7 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
         res.status(404).json({ error: errMsg.public });
         return;
     }
-    fullLogging('Successfully logged in.'.green);
+    verbose('Successfully logged in.'.green);
 
     let ires;
     let _sem = req.query.sem || getSem();
@@ -209,13 +209,13 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
         co(function *() {
             try {
                 yield access.logout(headers);
-                fullLogging('Successfully logged out: '.green + req.query.id.yellow);
+                verbose('Successfully logged out: '.green + req.query.id.yellow);
             } catch (errMsg) {
                 logging(errMsg.inner.red);
             }
         });
     }
-    fullLogging('Successfully entered exams page.'.green);
+    verbose('Successfully entered exams page.'.green);
 
     let $ = cheerio.load(ires.text);
 
@@ -246,9 +246,9 @@ app.get(/^\/e(?:|xams)$/, co.wrap(function *(req, res) {
     });
 
     res.json(result);
-    fullLogging(`Successfully responded. (req -> res processed in ${new Date() - start}ms)`.green);
+    verbose(`Successfully responded. (req -> res processed in ${new Date() - start}ms)`.green);
 }));
 
 app.listen(port, () => {
-    logging(`The API is now running on port ${port}. Full logging is ${program.fullLog ? 'enabled' : 'disabled'}`.green);
+    logging(`The API is now running on port ${port}. Verbose logging is ${program.verbose ? 'enabled' : 'disabled'}`.green);
 });
